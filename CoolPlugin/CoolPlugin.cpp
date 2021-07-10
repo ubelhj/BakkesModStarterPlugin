@@ -21,7 +21,7 @@ void CoolPlugin::onLoad()
 			coolEnabled = cvar.getBoolValue();
 			});
 
-	cvarManager->registerCvar("cool_distance", "200", "Distance to place the ball above");
+	cvarManager->registerCvar("cool_distance", "200.0", "Distance to place the ball above");
 }
 
 void CoolPlugin::onUnload() {
@@ -37,7 +37,7 @@ void CoolPlugin::ballOnTop() {
 
 	CVarWrapper distanceCVar = cvarManager->getCvar("cool_distance");
 	if (!distanceCVar) { return; }
-	int distance = distanceCVar.getIntValue();
+	float distance = distanceCVar.getFloatValue();
 		 
 	BallWrapper ball = server.GetBall();
 	if (!ball) { return; }
