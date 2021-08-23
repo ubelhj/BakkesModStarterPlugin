@@ -21,6 +21,12 @@ void CoolPlugin::onLoad()
 			coolEnabled = cvar.getBoolValue();
 			});
 
+	gameWrapper->LoadToastTexture("cool", gameWrapper->GetDataFolder() / "cool.png");
+
+	cvarManager->registerNotifier("cool_toast", [this](std::vector<std::string> args) {
+		gameWrapper->Toast("Whoa you're cool", "Super cool", "cool", 5.0, ToastType_Warning)
+		}, "", PERMISSION_ALL);
+
 	cvarManager->registerCvar("cool_distance", "200.0", "Distance to place the ball above");
 }
 
