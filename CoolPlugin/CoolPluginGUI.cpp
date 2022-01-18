@@ -13,6 +13,8 @@ std::string CoolPlugin::GetPluginName()
 	return "CoolPlugin";
 }
 
+bool inDragMode = false;
+
 void CoolPlugin::RenderSettings() {
 	ImGui::TextUnformatted("A really cool plugin");
 
@@ -52,6 +54,52 @@ void CoolPlugin::RenderSettings() {
 	if (ImGui::IsItemHovered()) {
 		std::string hoverText = "distance is " + std::to_string(distance);
 		ImGui::SetTooltip(hoverText.c_str());
+	}
+
+	CVarWrapper xLocCvar = cvarManager->getCvar("cool_x_location");
+	if (!xLocCvar) { return; }
+	float xLoc = xLocCvar.getFloatValue();
+	if (ImGui::SliderFloat("Text X Location", &xLoc, 0.0, 5000.0)) {
+		xLocCvar.setValue(xLoc);
+	}
+	CVarWrapper yLocCvar = cvarManager->getCvar("cool_y_location");
+	if (!yLocCvar) { return; }
+	float yLoc = yLocCvar.getFloatValue();
+	if (ImGui::SliderFloat("Text Y Location", &yLoc, 0.0, 5000.0)) {
+		yLocCvar.setValue(yLoc);
+	}
+
+	DragWidget(xLocCvar, yLocCvar);
+
+	CVarWrapper textColorVar = cvarManager->getCvar("cool_color");
+	if (!textColorVar) { return; }
+	// converts from 0-255 color to 0.0-1.0 color
+	LinearColor textColor = textColorVar.getColorValue() / 255;
+	if (ImGui::ColorEdit4("Text Color", &textColor.R)) {
+		textColorVar.setValue(textColor * 255);
+	}
+	if (ImGui::ColorEdit4("Text Color With Flags", &textColor.R, ImGuiColorEditFlags_NoInputs | ImGuiColorEditFlags_AlphaBar)) {
+		textColorVar.setValue(textColor * 255);
+	}
+}
+
+void CoolPlugin::DragWidget(CVarWrapper xLocCvar, CVarWrapper yLocCvar) {
+	ImGui::Checkbox("Drag Mode", &inDragMode);
+
+	if (inDragMode) {
+		if (ImGui::IsAnyWindowHovered() || ImGui::IsAnyItemHovered()) {
+			// doesn't do anything if any ImGui is hovered over
+			return;
+		}
+		// drag cursor w/ arrows to N, E, S, W
+		ImGui::SetMouseCursor(2);
+		if (ImGui::IsMouseDown(0)) {
+			// if holding left click, move
+			// sets location to current mouse position
+			ImVec2 mousePos = ImGui::GetMousePos();
+			xLocCvar.setValue(mousePos.x);
+			yLocCvar.setValue(mousePos.y);
+		}
 	}
 }
 

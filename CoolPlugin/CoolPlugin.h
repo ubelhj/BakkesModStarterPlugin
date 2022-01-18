@@ -17,5 +17,8 @@ class CoolPlugin : public BakkesMod::Plugin::BakkesModPlugin, public BakkesMod::
     void RenderSettings() override;
     std::string GetPluginName() override;
     void SetImGuiContext(uintptr_t ctx) override;
+    void DragWidget(CVarWrapper xLocCvar, CVarWrapper yLocCvar);
+
+    void Render(CanvasWrapper canvas);
 };
 

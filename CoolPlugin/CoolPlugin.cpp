@@ -28,6 +28,15 @@ void CoolPlugin::onLoad()
 		}, "", PERMISSION_ALL);
 
 	cvarManager->registerCvar("cool_distance", "200.0", "Distance to place the ball above");
+
+	cvarManager->registerCvar("cool_color", "#FFFFFF", "color of overlay");
+
+	gameWrapper->RegisterDrawable([this](CanvasWrapper canvas) {
+		Render(canvas);
+	});
+
+	cvarManager->registerCvar("cool_x_location", "0", "set x location of the overlay");
+	cvarManager->registerCvar("cool_y_location", "0", "set y location of the overlay");
 }
 
 void CoolPlugin::onUnload() {
@@ -56,4 +65,30 @@ void CoolPlugin::ballOnTop() {
 	Vector carLocation = car.GetLocation();
 	float ballRadius = ball.GetRadius();
 	ball.SetLocation(carLocation + Vector{ 0, 0, distance });
+}
+
+// in a .cpp file 
+void CoolPlugin::Render(CanvasWrapper canvas) {
+	CVarWrapper textColorVar = cvarManager->getCvar("cool_color");
+	if (!textColorVar) {
+		return;
+	}
+	LinearColor textColor = textColorVar.getColorValue();
+	canvas.SetColor(textColor);
+
+	CVarWrapper xLocCvar = cvarManager->getCvar("cool_x_location");
+	if (!xLocCvar) { return; }
+	float xLoc = xLocCvar.getFloatValue();
+
+	CVarWrapper yLocCvar = cvarManager->getCvar("cool_y_location");
+	if (!yLocCvar) { return; }
+	float yLoc = yLocCvar.getFloatValue();
+
+	canvas.SetPosition(Vector2F{ xLoc, yLoc });
+
+	// says hi
+	// draws from the last set position
+	// the two floats are text x and y scale
+	// the false turns off the drop shadow
+	canvas.DrawString("Hi Cool Dude", 2.0, 2.0, false);
 }
